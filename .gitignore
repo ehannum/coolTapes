@@ -1,6 +1,9 @@
 node_modules
 .sass-cache
+public/out.webm
 public/src/build.js
 public/res/*.css
 public/res/*.map
+package-lock.json
+server/tmp/*
 .env
