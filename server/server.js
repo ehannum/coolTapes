@@ -3,28 +3,9 @@ var app = express();
 var http = require('http');
 var server = http.Server(app);
 var ffmpeg = require('fluent-ffmpeg');
-var ffmpegStatic = require('ffmpeg-static');
+// var ffmpegStatic = require('ffmpeg-static');
 var fileupload = require('express-fileupload');
 var fs = require('fs');
-
-// // firebase initialization
-// var firebase = require('firebase');
-// var fKey = process.env.FIREBASE_KEY || null;
-// var db = null;
-
-// // -- FIREBASE DATABASE SETUP
-
-// if (fKey) {
-//   firebase.initializeApp({
-//     serviceAccount: JSON.parse(fKey),
-//     databaseURL: 'https://cool-tapes.firebaseio.com/'
-//   });
-
-//   db = firebase.database();
-//   console.log('Connected and authenticated to Firebase.');
-// } else {
-//   console.log('Firebase authentication failure: No Private Key found.');
-// }
 
 // -- SERVE STATIC FILES and JSON
 
@@ -46,20 +27,21 @@ app.post('/jam', function (req, res) {
   // TODO: move this to some cloud storage
   var webmWriteStream = fs.createWriteStream('./public/tmp/' + timestamp + '.webm');
 
-  var vid = ffmpeg('./tmp/' + timestamp + '.gif')
-    .setFfmpegPath(ffmpegStatic.path)
+  var vid = ffmpeg()
+    .input('./tmp/' + timestamp + '.gif')
+    // .setFfmpegPath(ffmpegStatic.path)
     .inputOptions('-ignore_loop 0')
     .inputOptions('-threads 16')
-    .addInput('./tmp/' + timestamp + '.mp3')
+    .input('./tmp/' + timestamp + '.mp3')
     .outputOptions('-shortest')
     .outputFormat('webm')
-    .videoBitrate('1000k')
+    .videoBitrate('200k')
     .on('start', function (command) {
       console.log('Starting ' + command);
     })
     .on('progress', function (progress) {
       res.write(progress.timemark);
-      if (progress.timemark) console.log(progress.timemark);
+      console.log(progress.timemark);
     })
     .on('end', function () {
       console.log('Finished Processing!');

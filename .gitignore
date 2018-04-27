@@ -1,7 +1,8 @@
 node_modules
 .sass-cache
-tmp/*
-public/tmp/*
+tmp/*.webm
+public/tmp/*.gif
+public/tmp/*.mp3
 public/src/build.js
 public/res/*.css
 public/res/*.map
