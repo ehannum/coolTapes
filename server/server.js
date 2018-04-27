@@ -49,6 +49,7 @@ app.post('/jam', function (req, res) {
   var vid = ffmpeg('./tmp/' + timestamp + '.gif')
     .setFfmpegPath(ffmpegStatic.path)
     .inputOptions('-ignore_loop 0')
+    .inputOptions('-threads 16')
     .addInput('./tmp/' + timestamp + '.mp3')
     .outputOptions('-shortest')
     .outputFormat('webm')
@@ -56,9 +57,14 @@ app.post('/jam', function (req, res) {
     .on('start', function (command) {
       console.log('Starting ' + command);
     })
+    .on('progress', function (progress) {
+      res.write(progress.timemark);
+      if (progress.timemark) console.log(progress.timemark);
+    })
     .on('end', function () {
       console.log('Finished Processing!');
-      res.send('<video src="./tmp/' + timestamp + '.webm" type="video/webm" controls></video>');
+      res.write('XX<video src="./tmp/' + timestamp + '.webm" type="video/webm" controls></video>');
+      res.end();
     })
     .on('error', function (err) {
       console.log(err.message);

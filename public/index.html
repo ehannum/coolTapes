@@ -13,21 +13,22 @@
       <div class="flex-box">
         <div>gif:</div>
         <div>
-          <input type="file" name="gif" accept=".gif" required>
+          <input type="file" id="gif" name="gif" accept=".gif" required>
         </div>
       </div>
       <div class="flex-box">
         <div>mp3:</div>
         <div>
-          <input type="file" name="mp3" accept=".mp3" required>
+          <input type="file" id="mp3" name="mp3" accept=".mp3" required>
         </div>
       </div>
       <div class="flex-box">
-        <input type="submit" name="submit" value="Upload">
+        <input type="submit" id="upload" name="submit" value="Upload">
       </div>
     </form>
+    <div class="output"></div>
   </div>
 </body>
+<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="src/build.js"></script>
-<script src="http://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 </html>
