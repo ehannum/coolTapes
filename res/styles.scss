@@ -2,8 +2,42 @@
 html, body {
   margin: 0;
   padding: 0;
+  font-family: "Coolvetica", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 * { // Just makes everything so much easier
   box-sizing: border-box;
+}
+
+h1, h2, h3 {
+  font-family: "Permanent Marker", cursive;
+}
+
+.main {
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.flex-box {
+  display: flex;
+  justify-content: center;
+
+  div {
+    min-width: 20px;
+    padding: 5px;
+  }
+}
+
+@for $i from 1 through 5 {
+  .flex-#{$i} {
+    flex: $i;
+  }
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
 }

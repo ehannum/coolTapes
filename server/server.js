@@ -3,8 +3,28 @@ var app = express();
 var http = require('http');
 var server = http.Server(app);
 var ffmpeg = require('fluent-ffmpeg');
+var ffmpegStatic = require('ffmpeg-static');
 var fileupload = require('express-fileupload');
 var fs = require('fs');
+
+// // firebase initialization
+// var firebase = require('firebase');
+// var fKey = process.env.FIREBASE_KEY || null;
+// var db = null;
+
+// // -- FIREBASE DATABASE SETUP
+
+// if (fKey) {
+//   firebase.initializeApp({
+//     serviceAccount: JSON.parse(fKey),
+//     databaseURL: 'https://cool-tapes.firebaseio.com/'
+//   });
+
+//   db = firebase.database();
+//   console.log('Connected and authenticated to Firebase.');
+// } else {
+//   console.log('Firebase authentication failure: No Private Key found.');
+// }
 
 // -- SERVE STATIC FILES and JSON
 
@@ -15,29 +35,30 @@ app.use(fileupload());
 
 app.post('/jam', function (req, res) {
 
-  var gif = req.files.gif;
-  var mp3 = req.files.mp3;
+  var timestamp = (new Date()).getTime();
 
-  fs.writeFileSync('./server/tmp/in.gif', gif.data);
-  fs.writeFileSync('./server/tmp/in.mp3', mp3.data);
+  // TODO: writeFile instead of writeFileSync
+  fs.writeFileSync('./tmp/' + timestamp + '.gif', req.files.gif.data);
+  fs.writeFileSync('./tmp/' + timestamp + '.mp3', req.files.mp3.data);
 
-  // ffmpeg -ignore_loop 0 -i animation.gif -i audio.mp3 -shortest -c:v libvpx -threads 4 -b:v 400k -f webm out.webm
+  // ffmpeg -ignore_loop 0 -i animation.gif -i audio.mp3 -shortest -c:v libvpx -threads 4 -b:v 1000k -f webm out.webm
 
-  var webmWriteStream = fs.createWriteStream('./public/out.webm');
+  // TODO: move this to some cloud storage
+  var webmWriteStream = fs.createWriteStream('./public/tmp/' + timestamp + '.webm');
 
-  var vid = ffmpeg()
-    .input('./server/tmp/in.gif')
+  var vid = ffmpeg('./tmp/' + timestamp + '.gif')
+    .setFfmpegPath(ffmpegStatic.path)
     .inputOptions('-ignore_loop 0')
-    .input('./server/tmp/in.mp3')
+    .addInput('./tmp/' + timestamp + '.mp3')
     .outputOptions('-shortest')
     .outputFormat('webm')
-    .videoCodec('libvpx')
+    .videoBitrate('1000k')
     .on('start', function (command) {
       console.log('Starting ' + command);
     })
     .on('end', function () {
-      console.log('Finished Processing');
-      res.send('<video><source src="out.webm" type="video/webm" controls></video>');
+      console.log('Finished Processing!');
+      res.send('<video src="./tmp/' + timestamp + '.webm" type="video/webm" controls></video>');
     })
     .on('error', function (err) {
       console.log(err.message);
