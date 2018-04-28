@@ -3,7 +3,6 @@ var app = express();
 var http = require('http');
 var server = http.Server(app);
 var ffmpeg = require('fluent-ffmpeg');
-// var ffmpegStatic = require('ffmpeg-static');
 var fileupload = require('express-fileupload');
 var fs = require('fs');
 
@@ -16,7 +15,7 @@ app.use(fileupload());
 
 app.post('/jam', function (req, res) {
 
-  var timestamp = (new Date()).getTime();
+  var timestamp = Date.now();
 
   // TODO: writeFile instead of writeFileSync
   fs.writeFileSync('./tmp/' + timestamp + '.gif', req.files.gif.data);
@@ -29,13 +28,14 @@ app.post('/jam', function (req, res) {
 
   var vid = ffmpeg()
     .input('./tmp/' + timestamp + '.gif')
-    // .setFfmpegPath(ffmpegStatic.path)
     .inputOptions('-ignore_loop 0')
     .inputOptions('-threads 16')
     .input('./tmp/' + timestamp + '.mp3')
+    .videoCodec('libvpx')
     .outputOptions('-shortest')
+    .outputOptions('-g 250')
     .outputFormat('webm')
-    .videoBitrate('200k')
+    .videoBitrate('64k')
     .on('start', function (command) {
       console.log('Starting ' + command);
     })
